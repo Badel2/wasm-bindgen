@@ -9,6 +9,7 @@ edition = "2018"
 
 [dependencies]
 console_error_panic_hook = '0.1'
+gg-alloc = "1"
 js-sys = { path = '../js-sys', version = '0.3.58' }
 scoped-tls = "1.0"
 wasm-bindgen = { path = '../..', version = '0.2.81' }
