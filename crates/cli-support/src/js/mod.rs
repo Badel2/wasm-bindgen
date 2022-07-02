@@ -898,7 +898,7 @@ impl<'a> Context<'a> {
                 "
                 static __wrap(ptr) {{
                     const obj = Object.create({}.prototype);
-                    obj.ptr = ptr;
+                    obj.ptr = ptr >>> 0;
                     {}
                     return obj;
                 }}
@@ -914,7 +914,7 @@ impl<'a> Context<'a> {
 
         if self.config.weak_refs {
             self.global(&format!(
-                "const {}Finalization = new FinalizationRegistry(ptr => wasm.{}(ptr));",
+                "const {}Finalization = new FinalizationRegistry(ptr => wasm.{}(ptr >>> 0));",
                 name,
                 wasm_bindgen_shared::free_function(&name),
             ));
@@ -1207,14 +1207,14 @@ impl<'a> Context<'a> {
             "\
                 if (realloc === undefined) {{
                     const buf = cachedTextEncoder.encode(arg);
-                    const ptr = malloc(buf.length);
+                    const ptr = malloc(buf.length) >>> 0;
                     {mem}().subarray(ptr, ptr + buf.length).set(buf);
                     WASM_VECTOR_LEN = buf.length;
                     return ptr;
                 }}
 
                 let len = arg.length;
-                let ptr = malloc(len);
+                let ptr = malloc(len) >>> 0;
 
                 const mem = {mem}();
 
@@ -1242,7 +1242,7 @@ impl<'a> Context<'a> {
                     if (offset !== 0) {{
                         arg = arg.slice(offset);
                     }}
-                    ptr = realloc(ptr, len, len = offset + arg.length * 3);
+                    ptr = realloc(ptr, len, len = offset + arg.length * 3) >>> 0;
                     const view = {mem}().subarray(ptr + offset, ptr + len);
                     const ret = encodeString(arg, view);
                     {debug_end}
@@ -1314,7 +1314,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                         function {}(array, malloc) {{
-                            const ptr = malloc(array.length * 4);
+                            const ptr = malloc(array.length * 4) >>> 0;
                             const mem = {}();
                             for (let i = 0; i < array.length; i++) {{
                                 mem[ptr / 4 + i] = {}(array[i]);
@@ -1331,7 +1331,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                         function {}(array, malloc) {{
-                            const ptr = malloc(array.length * 4);
+                            const ptr = malloc(array.length * 4) >>> 0;
                             const mem = {}();
                             for (let i = 0; i < array.length; i++) {{
                                 mem[ptr / 4 + i] = addHeapObject(array[i]);
@@ -1364,7 +1364,7 @@ impl<'a> Context<'a> {
         self.global(&format!(
             "
             function {}(arg, malloc) {{
-                const ptr = malloc(arg.length * {size});
+                const ptr = malloc(arg.length * {size}) >>> 0;
                 {}().set(arg, ptr / {size});
                 WASM_VECTOR_LEN = arg.length;
                 return ptr;
@@ -1461,6 +1461,7 @@ impl<'a> Context<'a> {
         self.global(&format!(
             "
             function {}(ptr, len) {{
+                ptr = ptr >>> 0;
                 return cachedTextDecoder.decode({}().{}(ptr, ptr + len));
             }}
             ",
@@ -1504,6 +1505,7 @@ impl<'a> Context<'a> {
                 if (ptr === 0) {{
                     return {get_object}(len);
                 }} else {{
+                    ptr = ptr >>> 0;
                     return {get_string}(ptr, len);
                 }}
             }}
@@ -1531,6 +1533,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                     function {}(ptr, len) {{
+                        ptr = ptr >>> 0;
                         const mem = {}();
                         const slice = mem.subarray(ptr / 4, ptr / 4 + len);
                         const result = [];
@@ -1549,6 +1552,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                     function {}(ptr, len) {{
+                        ptr = ptr >>> 0;
                         const mem = {}();
                         const slice = mem.subarray(ptr / 4, ptr / 4 + len);
                         const result = [];
@@ -1631,6 +1635,7 @@ impl<'a> Context<'a> {
         self.global(&format!(
             "
             function {name}(ptr, len) {{
+                ptr = ptr >>> 0;
                 return {mem}().subarray(ptr / {size}, ptr / {size} + len);
             }}
             ",
