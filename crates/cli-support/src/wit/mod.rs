@@ -1557,7 +1557,7 @@ You should be able to update the wasm-bindgen dependency with:
 
 or you can update the binary with
 
-    cargo install -f wasm-bindgen-cli
+    cargo install -f wasm-bindgen-cli --git 'https://github.com/Badel2/wasm-bindgen'
 
 if this warning fails to go away though and you're not sure what to do feel free
 to open an issue at https://github.com/rustwasm/wasm-bindgen/issues!
